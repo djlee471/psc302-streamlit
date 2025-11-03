@@ -107,11 +107,14 @@ from datetime import datetime
 
 def module_chat_ui(module_key: str, prompt_hint: str, starter: str = ""):
     """Display module chat UI and record each exchange in conversation_log."""
-    st.subheader("Your Dialogue")
     history = st.session_state.histories.setdefault(module_key, [])
 
+    # Show starter text first (Goal / Coach prompts)
     if starter and not history:
         history.append({"role": "assistant", "content": starter})
+
+    # 👉 Now introduce the dialogue area
+    st.subheader("Your Dialogue")
 
     # Display conversation so far
     for msg in history:
