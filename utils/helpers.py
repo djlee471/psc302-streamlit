@@ -109,18 +109,24 @@ def module_chat_ui(module_key: str, prompt_hint: str, starter: str = ""):
     """Display module chat UI and record each exchange in conversation_log."""
     history = st.session_state.histories.setdefault(module_key, [])
 
-    # Show starter text first (Goal / Coach prompts)
-    if starter and not history:
-        history.append({"role": "assistant", "content": starter})
+    # -------------------------------------------------------------------------
+    # 1. Show starter text (Goal / Coach prompts) ABOVE the dialogue section
+    # -------------------------------------------------------------------------
+    if starter:
+        st.markdown(starter)
 
-    # 👉 Now introduce the dialogue area
+    st.divider()
     st.subheader("Your Dialogue")
 
-    # Display conversation so far
+    # -------------------------------------------------------------------------
+    # 2. Display conversation so far
+    # -------------------------------------------------------------------------
     for msg in history:
         st.chat_message(msg["role"]).markdown(msg["content"])
 
-    # New user input
+    # -------------------------------------------------------------------------
+    # 3. Handle new user input and AI reply
+    # -------------------------------------------------------------------------
     u = st.chat_input(prompt_hint)
     if u:
         st.chat_message("user").markdown(u)
