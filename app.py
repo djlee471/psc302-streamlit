@@ -97,7 +97,7 @@ st.markdown(
     4. Sampling & Inference  
     5. Regression Logic (interpretation only)  
     6. Writing & Reporting  
-    7. **AI Research Workflow** 🧠 *(new)*  
+    7. AI Research Workflow  
 
     **Reminder:** This app is your *reasoning coach*. It won’t write your paper for you.
     """
