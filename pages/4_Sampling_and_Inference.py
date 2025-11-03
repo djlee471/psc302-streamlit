@@ -1,5 +1,5 @@
 # ─────────────────────────────────────────────────────────────────────────────
-# Module 4 — Sampling and Inference
+# pages/4_Sampling_and_Inference.py
 # PSC 302 Research Methods Tutor (Interactive)
 # ─────────────────────────────────────────────────────────────────────────────
 
@@ -7,6 +7,11 @@ import streamlit as st
 import numpy as np
 import matplotlib.pyplot as plt
 from utils.helpers import render_header, module_chat_ui
+
+# -----------------------------------------------------------------------------
+# Page setup
+# -----------------------------------------------------------------------------
+st.set_page_config(page_title="Sampling and Inference", page_icon="📊", layout="wide")
 
 # --- ensure per-page session key sync ---
 if "api_key" not in st.session_state:
@@ -221,7 +226,7 @@ starter = (
 )
 
 module_chat_ui(
-    "module_sampling_inference",
+    module_key="Sampling & Inference",  # ← clean, descriptive name for logs
     prompt_hint="Ask about sampling error, hypothesis tests, or p-values…",
     starter=starter
 )

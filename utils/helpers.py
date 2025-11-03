@@ -100,45 +100,49 @@ def send_chat(messages: List[Dict[str, str]], temperature: float = 0.3) -> str:
             st.error(f"OpenAI error: {e}")
         return ""
 
+# ----------------------------------------------------------------------------- 
+# Chat interface for each module (auto-logging only)
 # -----------------------------------------------------------------------------
-# Chat interface for each module
-# -----------------------------------------------------------------------------
+from datetime import datetime
+
 def module_chat_ui(module_key: str, prompt_hint: str, starter: str = ""):
-    """Display module chat UI and manage conversation state."""
+    """Display module chat UI and record each exchange in conversation_log."""
     st.subheader("Your Dialogue")
     history = st.session_state.histories.setdefault(module_key, [])
 
     if starter and not history:
         history.append({"role": "assistant", "content": starter})
 
-    # Display history
+    # Display conversation so far
     for msg in history:
-        if msg["role"] == "user":
-            st.chat_message("user").markdown(msg["content"])
-        else:
-            st.chat_message("assistant").markdown(msg["content"])
+        st.chat_message(msg["role"]).markdown(msg["content"])
 
-    # Input
+    # New user input
     u = st.chat_input(prompt_hint)
     if u:
         st.chat_message("user").markdown(u)
         history.append({"role": "user", "content": u})
 
-        # Browse hint
-        if any(k.lower() in u.lower() for k in KEYWORDS_BROWSE):
-            browse_prompt = make_browse_prompt(u)
-            with st.expander("Use Web GPT for retrieval (copy this prompt)"):
-                st.code(browse_prompt)
-
-        # Compose messages and get reply
         messages = [{"role": "system", "content": SYSTEM_CORE}] + history
         reply = send_chat(messages)
+
         if reply:
             st.chat_message("assistant").markdown(reply)
             history.append({"role": "assistant", "content": reply})
 
-    # Save conversation back to session
+            # ✅ Auto-log prompt + reply in conversation_log
+            if "conversation_log" not in st.session_state:
+                st.session_state["conversation_log"] = []
+            st.session_state["conversation_log"].append({
+                "timestamp": datetime.now().isoformat(timespec="seconds"),
+                "module": module_key,
+                "prompt": u,
+                "response": reply,
+                "type": "interaction",
+            })
+
     st.session_state.histories[module_key] = history
+
 
 # -----------------------------------------------------------------------------
 # Page helpers
@@ -159,15 +163,32 @@ def render_webgpt_banner():
     with cols[1]:
         st.link_button("Open Google Scholar", "https://scholar.google.com")
 
+# ----------------------------------------------------------------------------- 
+# Logging helper (for saving prompts, responses, and notes)
 # -----------------------------------------------------------------------------
-# Browse prompt generator
-# -----------------------------------------------------------------------------
-def make_browse_prompt(user_need: str) -> str:
-    """Generate a Web GPT prompt for literature retrieval."""
-    return (
-        "You are assisting a PSC 302 student with a **literature review**. "
-        "Find 2–3 peer-reviewed sources from 2020–2025 directly relevant to:\n\n"
-        + user_need
-        + "\n\nReturn APA-style citations with DOI links. Provide 1–2 sentence summaries "
-          "and note methods (experiment, observational, quasi-experimental) and sample."
-    )
+from datetime import datetime
+
+def log_interaction(module: str, prompt: str, response: str = "", note_type: str = "interaction"):
+    """
+    Save a prompt–response or note entry into session_state["conversation_log"].
+    
+    Parameters
+    ----------
+    module : str
+        The module name or section (e.g., 'Sampling & Inference').
+    prompt : str
+        The student input or description.
+    response : str, optional
+        The model's output or notes.
+    note_type : str, optional
+        Type label (e.g., 'interaction', 'notes', 'custom_prompt').
+    """
+    if "conversation_log" not in st.session_state:
+        st.session_state["conversation_log"] = []
+    st.session_state["conversation_log"].append({
+        "timestamp": datetime.now().isoformat(timespec="seconds"),
+        "module": module,
+        "type": note_type,
+        "prompt": prompt,
+        "response": response,
+    })
