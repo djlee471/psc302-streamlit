@@ -6,6 +6,9 @@
 import streamlit as st
 from utils.helpers import ensure_session, render_header, render_webgpt_banner
 
+st.sidebar.markdown("### 🏠 Home")
+
+
 # -----------------------------------------------------------------------------
 # 1. Basic page setup
 # -----------------------------------------------------------------------------
