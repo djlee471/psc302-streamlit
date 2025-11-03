@@ -1,0 +1,9 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# .streamlit/config.toml
+# ─────────────────────────────────────────────────────────────────────────────
+[theme]
+primaryColor = "#0ea5e9" # sky-500
+backgroundColor = "#0b1220" # dark canvas
+secondaryBackgroundColor = "#111827"
+textColor = "#e5e7eb" # gray-200
+font = "sans serif"
